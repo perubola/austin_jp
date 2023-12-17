@@ -21,9 +21,6 @@ class culture:
         self.mass_array = 10*np.abs(np.random.randn(num_cells))  # stores cell mass 
         # area is proportional to m ^ (2/3)
         self.area_array = np.power(self.mass_array, (2/3))  # array storing cell area
-        # p = 1/(1+exp[-k(m-mc)])
-        # might not need it
-        # self.prob_array = 1/(1+np.exp(-k*(self.mass_array - m_crit)))
 
     def grow(self, steps: int):
         for _ in tqdm(range(steps)):
@@ -36,6 +33,26 @@ class culture:
 
             self.area_array = np.power(self.mass_array, (2/3))
             self.num_cells = len(self.mass_array)
+
+    def sigmoid_grow(self, noise_strength, steps):
+        """More sophisticated growth function"""
+        def sigmoid(x):
+            return 1 / (1 + np.exp(-self.k * (x - self.m_crit)))
+        for _ in tqdm(range(steps)):
+            noisy_gr = self.gr + np.random.normal(0, noise_strength, self.mass_array.shape)
+            # NOTE: I have no clue if making this an abs is valid 
+            self.mass_array = np.abs(self.mass_array + noisy_gr)
+
+            div_prob = sigmoid(self.mass_array)
+            for j, prob in enumerate(div_prob):
+                if np.random.rand() < prob:
+                    self.mass_array[j] /= 2
+                    self.mass_array = np.append(self.mass_array, self.mass_array[j])
+
+            
+        self.area_array = np.power(self.mass_array, (2/3))
+        self.num_cells = len(self.mass_array)
+        print(self.num_cells)
                 
 
     def visualize(self):
@@ -49,8 +66,8 @@ class culture:
         plt.title('Mass Distribution')
         
         plt.subplot(2,2,2)
-        plt.hist(self.mass_array, bins = mass_bins)
-        plt.xscale('log')
+        plt.hist(np.log(self.mass_array), bins = mass_bins)
+        # plt.xscale('log')
         plt.title('log-mass Distribution')
 
         plt.subplot(2,2,3)
@@ -59,8 +76,8 @@ class culture:
 
         plt.subplot(2,2,4)
         plt.title('log-area Distribution')
-        plt.xscale('log')
-        plt.hist(self.area_array, bins = area_bins)
+        # plt.xscale('log')
+        plt.hist(np.log(self.area_array), bins = area_bins)
         plt.show()
 
 
