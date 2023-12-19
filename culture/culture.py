@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 from tqdm import tqdm 
 
+
 class culture:
     """
     holds n cells and evolves them over time 
@@ -35,7 +36,9 @@ class culture:
             self.num_cells = len(self.mass_array)
 
     def sigmoid_grow(self, noise_strength, steps):
-        """More sophisticated growth function"""
+        """More sophisticated growth function
+        noise_strength: controls spread of the noise
+        steps: time steps"""
         def sigmoid(x):
             return 1 / (1 + np.exp(-self.k * (x - self.m_crit)))
         for _ in tqdm(range(steps)):
@@ -59,14 +62,18 @@ class culture:
         """
         Plots histograms of the mass and area of the cell in normal and log distributions
         """
+        
         mass_bins = int(np.sqrt(len(self.mass_array))) 
         area_bins = int(np.sqrt(len(self.area_array)))
         plt.subplot(2,2,1)
         plt.hist(self.mass_array, bins = mass_bins)
+        plt.axvline(x=self.m_crit,color='r', linestyle='dotted')
         plt.title('Mass Distribution')
         
         plt.subplot(2,2,2)
         plt.hist(np.log(self.mass_array), bins = mass_bins)
+        plt.axvline(x=np.log(self.m_crit), color='r', linestyle='dotted')
+        plt.xlim(0, np.max(np.log(self.mass_array)))
         # plt.xscale('log')
         plt.title('log-mass Distribution')
 
@@ -78,6 +85,9 @@ class culture:
         plt.title('log-area Distribution')
         # plt.xscale('log')
         plt.hist(np.log(self.area_array), bins = area_bins)
+        plt.xlim(0, np.max(np.log(self.area_array)))
+
+        plt.suptitle(f"Num Cells: {self.num_cells}, $M_c$: {self.m_crit}, $\kappa$: {self.k}")
         plt.show()
 
 
