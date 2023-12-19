@@ -42,7 +42,7 @@ class culture:
         def sigmoid(x):
             return 1 / (1 + np.exp(-self.k * (x - self.m_crit)))
         for _ in tqdm(range(steps)):
-            noisy_gr = self.gr + np.random.normal(0, noise_strength, self.mass_array.shape)
+            noisy_gr = self.gr + np.abs(np.random.normal(0, noise_strength, self.mass_array.shape))
             # NOTE: I have no clue if making this an abs is valid 
             self.mass_array = np.abs(self.mass_array + noisy_gr)
 
@@ -68,7 +68,7 @@ class culture:
         plt.subplot(2,2,1)
         plt.hist(self.mass_array, bins = mass_bins)
         plt.axvline(x=self.m_crit,color='r', linestyle='dotted')
-        plt.title('Mass Distribution')
+        plt.title(f"Mass Distribution, $\mu$: {np.mean(self.mass_array)}")
         
         plt.subplot(2,2,2)
         plt.hist(np.log(self.mass_array), bins = mass_bins)
@@ -87,7 +87,7 @@ class culture:
         plt.hist(np.log(self.area_array), bins = area_bins)
         plt.xlim(0, np.max(np.log(self.area_array)))
 
-        plt.suptitle(f"Num Cells: {self.num_cells}, $M_c$: {self.m_crit}, $\kappa$: {self.k}")
+        plt.suptitle(f"Num Cells: {self.num_cells}, $M_c$: {self.m_crit}, $\kappa$: {self.k}, gr: {self.gr}")
         plt.show()
 
 
