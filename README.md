@@ -18,3 +18,7 @@ cult.visualize()
 cult.sigmoid_grow(noise_strength=1, steps=20)  
 cult.visualize()
 ```
+## TODO
+1. Make sim more realistic (add carrying capacity, cell death)
+2. Fit the lognormal
+3. Assuming the lognormal fits, test for what range of k it fits
